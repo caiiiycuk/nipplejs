@@ -45,7 +45,16 @@ export const bindEvt = (el, arg, handler) => {
     for (let i = 0; i < types.length; i += 1) {
         type = types[i];
         if (el.addEventListener) {
-            el.addEventListener(type, handler, false);
+            var wrapper = function(e) {
+                handler(e);
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            };
+            el.addEventListener(type, wrapper, {
+                useCapture: true,
+                passive: false
+            });
         } else if (el.attachEvent) {
             el.attachEvent(type, handler);
         }
